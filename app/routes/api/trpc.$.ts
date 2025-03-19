@@ -1,5 +1,6 @@
 import { createAPIFileRoute } from '@tanstack/react-start/api';
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
+import { db } from '~/db';
 import { trpcRouter } from '~/trpc/router';
 
 function handler({ request }: { request: Request }) {
@@ -7,6 +8,12 @@ function handler({ request }: { request: Request }) {
     req: request,
     router: trpcRouter,
     endpoint: '/api/trpc',
+    createContext() {
+      return {
+        db,
+        headers: request.headers,
+      };
+    }
   });
 }
 

@@ -9,7 +9,9 @@ type Post = {
 };
 
 const postRouter = {
-  list: publicProcedure.query(async () => {
+  list: publicProcedure.query(async ({ ctx }) => {
+    const usrs = await ctx.db.query.userTable.findMany()
+    console.log("Users", usrs)
     const posts = await fetch(
       'https://jsonplaceholder.typicode.com/posts',
     ).then((r) => r.json() as Promise<Array<Post>>);
