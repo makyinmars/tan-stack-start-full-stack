@@ -37,7 +37,7 @@ const timestamps = {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 };
 
-export const userTable = pgTable("user", {
+export const users = pgTable("user", {
   id: varchar("id")
     .primaryKey()
     .$defaultFn(() => createId()),
@@ -46,7 +46,7 @@ export const userTable = pgTable("user", {
   ...timestamps,
 });
 
-export const accountTable = pgTable(
+export const accounts = pgTable(
   "account",
   {
     id: varchar("id", { length: 24 })
@@ -54,7 +54,7 @@ export const accountTable = pgTable(
       .$defaultFn(() => createId()),
     userId: varchar("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     accountType: accountTypeEnum("account_type").notNull().default("email"),
     password: text("password"),
     salt: text("salt"),
@@ -65,7 +65,7 @@ export const accountTable = pgTable(
   ]
 );
 
-export const resetTokenTable = pgTable(
+export const resetTokens = pgTable(
   "reset_token",
   {
     id: varchar("id", { length: 24 })
@@ -73,7 +73,7 @@ export const resetTokenTable = pgTable(
       .$defaultFn(() => createId()),
     userId: varchar("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" })
+      .references(() => users.id, { onDelete: "cascade" })
       .unique(),
     token: text("token"),
     tokenExpiresAt: timestamp("token_expires_at", { mode: "date" }),
@@ -82,7 +82,7 @@ export const resetTokenTable = pgTable(
   (table) => [index("reset_tokens_token_idx").on(table.token)]
 );
 
-export const verifyEmailTokenTable = pgTable(
+export const verifyEmailTokens = pgTable(
   "verify_email_token",
   {
     id: varchar("id", { length: 24 })
@@ -90,7 +90,7 @@ export const verifyEmailTokenTable = pgTable(
       .$defaultFn(() => createId()),
     userId: varchar("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" })
+      .references(() => users.id, { onDelete: "cascade" })
       .unique(),
     token: text("token"),
     tokenExpiresAt: timestamp("token_expires_at", { mode: "date" }),
@@ -99,13 +99,13 @@ export const verifyEmailTokenTable = pgTable(
   (table) => [index("verify_email_tokens_token_idx").on(table.token)]
 );
 
-export const profileTable = pgTable("profile", {
+export const profiles = pgTable("profile", {
   id: varchar("id", { length: 24 })
     .primaryKey()
     .$defaultFn(() => createId()),
   userId: varchar("user_id")
     .notNull()
-    .references(() => userTable.id, { onDelete: "cascade" })
+    .references(() => users.id, { onDelete: "cascade" })
     .unique(),
   displayName: text("displayName"),
   imageId: text("imageId"),
@@ -114,7 +114,7 @@ export const profileTable = pgTable("profile", {
   ...timestamps,
 });
 
-export const sessionTable = pgTable(
+export const sessions = pgTable(
   "session",
   {
     id: varchar("id")
@@ -122,7 +122,7 @@ export const sessionTable = pgTable(
       .$defaultFn(() => createId()),
     userId: varchar("user_id")
       .notNull()
-      .references(() => userTable.id, { onDelete: "cascade" }),
+      .references(() => users.id, { onDelete: "cascade" }),
     expiresAt: timestamp("expires_at", {
       withTimezone: true,
       mode: "date",
@@ -133,11 +133,11 @@ export const sessionTable = pgTable(
 );
 
 // User and Auth Types
-export type User = typeof userTable.$inferSelect;
-export type NewUser = typeof userTable.$inferInsert;
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 
-export type Account = typeof accountTable.$inferSelect;
-export type NewAccount = typeof accountTable.$inferInsert;
+export type Account = typeof accounts.$inferSelect;
+export type NewAccount = typeof accounts.$inferInsert;
 
-export type ResetToken = typeof resetTokenTable.$inferSelect;
-export type NewResetToken = typeof resetTokenTable.$inferInsert;
+export type ResetToken = typeof resetTokens.$inferSelect;
+export type NewResetToken = typeof resetTokens.$inferInsert;
