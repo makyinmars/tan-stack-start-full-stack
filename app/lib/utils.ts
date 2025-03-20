@@ -1,4 +1,4 @@
-import { db } from "~/db";
+import { db } from "@/db";
 import crypto from "crypto";
 
 export const ITERATIONS = 10000;

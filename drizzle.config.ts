@@ -1,4 +1,4 @@
-import { databasePrefix } from "~/constants";
+import { databasePrefix } from "@/constants";
 import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 

@@ -1,12 +1,12 @@
-import { db } from "~/db";
+import { db } from "@/db";
 import {
   encodeBase32LowerCaseNoPadding,
   encodeHexLowerCase,
 } from "@oslojs/encoding";
-import { type Session, sessions, type User, users } from "~/db/schema";
+import { type Session, sessions, type User, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { sha256 } from "@oslojs/crypto/sha2";
-import type { UserId } from "~/db/schema";
+import type { UserId } from "@/db/schema";
 import { getSessionToken } from "./session";
 
 const SESSION_REFRESH_INTERVAL_MS = 1000 * 60 * 60 * 24 * 15;

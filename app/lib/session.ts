@@ -1,4 +1,4 @@
-import { UserId } from "~/db/schema";
+import { UserId } from "@/db/schema";
 import { createSession, generateSessionToken, validateRequest } from "./auth";
 // import { AuthenticationError } from "~/use-cases/errors";
 import { getCookie, setCookie } from "vinxi/http";

@@ -9,10 +9,10 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { TRPCOptionsProxy } from '@trpc/tanstack-react-query';
-import appCss from '~/app.css?url';
-import { DefaultCatchBoundary } from '~/components/DefaultCatchBoundary';
-import { NotFound } from '~/components/NotFound';
-import { TRPCRouter } from '~/trpc/router';
+import appCss from '@/app.css?url';
+import { DefaultCatchBoundary } from '@/components/DefaultCatchBoundary';
+import { NotFound } from '@/components/NotFound';
+import { TRPCRouter } from '@/trpc/router';
 import * as React from 'react';
 
 export const Route = createRootRouteWithContext<{

@@ -14,7 +14,7 @@
     "skipLibCheck": true,
     "allowJs": true,
     "paths": {
-      "~/*": [
+      "@/*": [
         "./app/*"
       ]
     },

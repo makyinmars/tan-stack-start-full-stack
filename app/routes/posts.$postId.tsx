@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { createFileRoute, ErrorComponent, Link } from '@tanstack/react-router';
-import { NotFound } from '~/components/NotFound';
-import { useTRPC } from '~/trpc/react';
+import { NotFound } from '@/components/NotFound';
+import { useTRPC } from '@/trpc/react';
 
 export const Route = createFileRoute('/posts/$postId')({
   loader: async ({ params: { postId }, context }) => {
