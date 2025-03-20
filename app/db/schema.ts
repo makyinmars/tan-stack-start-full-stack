@@ -134,6 +134,7 @@ export const sessions = pgTable(
 
 // User and Auth Types
 export type User = typeof users.$inferSelect;
+export type UserId = User["id"];
 export type NewUser = typeof users.$inferInsert;
 
 export type Account = typeof accounts.$inferSelect;
@@ -141,3 +142,5 @@ export type NewAccount = typeof accounts.$inferInsert;
 
 export type ResetToken = typeof resetTokens.$inferSelect;
 export type NewResetToken = typeof resetTokens.$inferInsert;
+
+export type Session = typeof sessions.$inferSelect;

@@ -18,6 +18,8 @@
     "db:studio": "bunx drizzle-kit studio"
   },
   "dependencies": {
+    "@oslojs/crypto": "^1.0.1",
+    "@oslojs/encoding": "^1.1.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@tanstack/react-query": "^5.67.1",
     "@tanstack/react-query-devtools": "^5.64.2",
