@@ -28,6 +28,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "sonner";
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -92,10 +93,8 @@ function Home() {
             context.previousPosts
           );
         }
-        console.error("Error creating post:", err);
       },
       onSuccess: (data) => {
-        console.log("success", data);
         form.reset();
       },
       onSettled: async () => {
@@ -118,8 +117,14 @@ function Home() {
 
   const handleCreatePost = async (values: z.infer<typeof formSchema>) => {
     try {
-      await createPostMutation.mutateAsync(values);
-    } catch {}
+      toast.promise(createPostMutation.mutateAsync(values), {
+        loading: "Creating post...",
+        success: "Post created successfully!",
+        error: "Failed to create post",
+      });
+    } catch (e) {
+      toast.error("Failed to create post");
+    }
   };
 
   console.log("postQuery data", postQuery.data);
@@ -176,12 +181,6 @@ function Home() {
             </Button>
           </form>
         </Form>
-
-        {createPostMutation.isSuccess && (
-          <div className="mt-4 p-3 bg-green-100 text-green-800 rounded">
-            Post created successfully!
-          </div>
-        )}
       </div>
       <Table>
         <TableHeader>
