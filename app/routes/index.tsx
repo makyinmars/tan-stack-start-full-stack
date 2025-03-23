@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -68,7 +67,7 @@ function Home() {
         // Optimistically update the cache with the new post
         queryClient.setQueryData(
           trpc.post.dbList.queryOptions().queryKey,
-          (old: any) => {
+          (old) => {
             // Create a temporary ID for the optimistic post
             const optimisticPost = {
               id: `temp-${Date.now()}`,
@@ -95,6 +94,7 @@ function Home() {
         }
       },
       onSuccess: (data) => {
+        console.log("onSuccess", data);
         form.reset();
       },
       onSettled: async () => {
@@ -123,7 +123,9 @@ function Home() {
         error: "Failed to create post",
       });
     } catch (e) {
-      toast.error("Failed to create post");
+      if (e instanceof Error) {
+        toast.error(`Failed to create post: ${e.message}`);
+      }
     }
   };
 

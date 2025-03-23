@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure } from "../init";
+import { protectedProcedure, publicProcedure } from "../init";
 import { TRPCError, TRPCRouterRecord } from "@trpc/server";
 import { posts } from "@/db/schema";
 
@@ -35,6 +35,7 @@ export const postRouter = {
   create: publicProcedure
     .input(z.object({ title: z.string(), body: z.string() }))
     .mutation(async ({ input, ctx }) => {
+
       const post = {
         id: Math.random().toString(36).slice(2),
         title: input.title,
@@ -52,6 +53,9 @@ export const postRouter = {
       return newPosts[0];
     }),
   dbList: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.select().from(posts);
+  }),
+  authList: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(posts);
   }),
 } satisfies TRPCRouterRecord;

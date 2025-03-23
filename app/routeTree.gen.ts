@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as RedirectImport } from './routes/redirect'
+import { Route as ProtectedImport } from './routes/protected'
 import { Route as PostsImport } from './routes/posts'
 import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
@@ -24,6 +25,12 @@ import { Route as PostsPostIdDeepImport } from './routes/posts_.$postId.deep'
 const RedirectRoute = RedirectImport.update({
   id: '/redirect',
   path: '/redirect',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ProtectedRoute = ProtectedImport.update({
+  id: '/protected',
+  path: '/protected',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsImport
       parentRoute: typeof rootRoute
     }
+    '/protected': {
+      id: '/protected'
+      path: '/protected'
+      fullPath: '/protected'
+      preLoaderRoute: typeof ProtectedImport
+      parentRoute: typeof rootRoute
+    }
     '/redirect': {
       id: '/redirect'
       path: '/redirect'
@@ -137,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
+  '/protected': typeof ProtectedRoute
   '/redirect': typeof RedirectRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/': typeof PostsIndexRoute
@@ -146,6 +161,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/protected': typeof ProtectedRoute
   '/redirect': typeof RedirectRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts': typeof PostsIndexRoute
@@ -157,6 +173,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
+  '/protected': typeof ProtectedRoute
   '/redirect': typeof RedirectRoute
   '/posts/$postId': typeof PostsPostIdRoute
   '/posts/': typeof PostsIndexRoute
@@ -169,6 +186,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/posts'
+    | '/protected'
     | '/redirect'
     | '/posts/$postId'
     | '/posts/'
@@ -177,6 +195,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/protected'
     | '/redirect'
     | '/posts/$postId'
     | '/posts'
@@ -186,6 +205,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/posts'
+    | '/protected'
     | '/redirect'
     | '/posts/$postId'
     | '/posts/'
@@ -197,6 +217,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   PostsRoute: typeof PostsRouteWithChildren
+  ProtectedRoute: typeof ProtectedRoute
   RedirectRoute: typeof RedirectRoute
   PostsPostIdDeepRoute: typeof PostsPostIdDeepRoute
 }
@@ -205,6 +226,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   PostsRoute: PostsRouteWithChildren,
+  ProtectedRoute: ProtectedRoute,
   RedirectRoute: RedirectRoute,
   PostsPostIdDeepRoute: PostsPostIdDeepRoute,
 }
@@ -222,6 +244,7 @@ export const routeTree = rootRoute
         "/",
         "/login",
         "/posts",
+        "/protected",
         "/redirect",
         "/posts_/$postId/deep"
       ]
@@ -238,6 +261,9 @@ export const routeTree = rootRoute
         "/posts/$postId",
         "/posts/"
       ]
+    },
+    "/protected": {
+      "filePath": "protected.tsx"
     },
     "/redirect": {
       "filePath": "redirect.tsx"
