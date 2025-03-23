@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
 import { useTRPC } from "@/trpc/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +20,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Define the form schema using Zod
 const formSchema = z.object({
@@ -24,18 +36,73 @@ const formSchema = z.object({
 });
 
 export const Route = createFileRoute("/")({
+  loader: async ({ context }) => {
+    const posts = await context.queryClient.ensureQueryData(
+      context.trpc.post.dbList.queryOptions()
+    );
+    return { posts };
+  },
   component: Home,
 });
 
 function Home() {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const postQuery = useSuspenseQuery(trpc.post.dbList.queryOptions());
+
   const createPostMutation = useMutation(
     trpc.post.create.mutationOptions({
-      onSuccess: async (data) => {
+      onMutate: async (newPost) => {
+        // Cancel any outgoing refetches so they don't overwrite our optimistic update
+        await queryClient.cancelQueries({
+          queryKey: trpc.post.dbList.queryOptions().queryKey,
+        });
+
+        // Snapshot the previous state
+        const previousPosts = queryClient.getQueryData(
+          trpc.post.dbList.queryOptions().queryKey
+        );
+
+        // Optimistically update the cache with the new post
+        queryClient.setQueryData(
+          trpc.post.dbList.queryOptions().queryKey,
+          (old: any) => {
+            // Create a temporary ID for the optimistic post
+            const optimisticPost = {
+              id: `temp-${Date.now()}`,
+              title: newPost.title,
+              body: newPost.body,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            };
+
+            return [...(old || []), optimisticPost];
+          }
+        );
+
+        // Return the snapshot so we can roll back if something goes wrong
+        return { previousPosts };
+      },
+      onError: (err, newPost, context) => {
+        // If the mutation fails, use the context we created in onMutate to roll back
+        if (context?.previousPosts) {
+          queryClient.setQueryData(
+            trpc.post.dbList.queryOptions().queryKey,
+            context.previousPosts
+          );
+        }
+        console.error("Error creating post:", err);
+      },
+      onSuccess: (data) => {
         console.log("success", data);
         form.reset();
-        await queryClient.invalidateQueries(trpc.post.list.pathFilter());
+      },
+      onSettled: async () => {
+        // Always refetch after error or success to ensure the server state
+        await queryClient.invalidateQueries({
+          queryKey: trpc.post.dbList.queryOptions().queryKey,
+        });
       },
     })
   );
@@ -54,6 +121,8 @@ function Home() {
       await createPostMutation.mutateAsync(values);
     } catch {}
   };
+
+  console.log("postQuery data", postQuery.data);
 
   return (
     <div className="p-2 flex flex-col gap-4">
@@ -114,8 +183,22 @@ function Home() {
           </div>
         )}
       </div>
-
-      <Button>Click me to go to the posts page</Button>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Title</TableHead>
+            <TableHead>Body</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {postQuery.data?.map((post) => (
+            <TableRow key={post.id}>
+              <TableCell>{post.title}</TableCell>
+              <TableCell>{post.body}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 }

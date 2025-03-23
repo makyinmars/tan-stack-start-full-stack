@@ -1,6 +1,6 @@
-import { createTRPCRouter } from './init';
-import { postRouter } from './routes/post';
-import { userRouter } from './routes/user';
+import { createTRPCRouter } from "./init";
+import { postRouter } from "./routers/post";
+import { userRouter } from "./routers/user";
 
 export const trpcRouter = createTRPCRouter({
   post: postRouter,

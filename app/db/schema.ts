@@ -37,6 +37,15 @@ const timestamps = {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 };
 
+export const posts = pgTable("post", {
+  id: varchar("id", { length: 24 })
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  ...timestamps,
+});
+
 export const users = pgTable("user", {
   id: varchar("id")
     .primaryKey()

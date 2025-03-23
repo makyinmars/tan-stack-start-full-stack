@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { publicProcedure } from "../init";
 import { TRPCError, TRPCRouterRecord } from "@trpc/server";
+import { posts } from "@/db/schema";
 
 
 type Post = {
@@ -33,14 +34,24 @@ export const postRouter = {
 
   create: publicProcedure
     .input(z.object({ title: z.string(), body: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const post = {
         id: Math.random().toString(36).slice(2),
         title: input.title,
         body: input.body,
       } as Post;
 
-      return post
+      const newPosts = await ctx.db.insert(posts).values({
+        id: post.id,
+        title: post.title,
+        body: post.body,
+      }).returning()
 
+      console.log("New Posts", newPosts);
+
+      return newPosts[0];
     }),
+  dbList: publicProcedure.query(async ({ ctx }) => {
+    return await ctx.db.select().from(posts);
+  }),
 } satisfies TRPCRouterRecord;
