@@ -1,5 +1,5 @@
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { User, UserId, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 export async function getUserByEmail(email: string) {
@@ -8,4 +8,18 @@ export async function getUserByEmail(email: string) {
   });
 
   return user;
+}
+
+export async function createUser(email: string) {
+  const [user] = await db
+    .insert(users)
+    .values({
+      email,
+    })
+    .returning();
+  return user;
+}
+
+export async function updateUser(userId: UserId, updatedUser: Partial<User>) {
+  await db.update(users).set(updatedUser).where(eq(users.id, userId));
 }

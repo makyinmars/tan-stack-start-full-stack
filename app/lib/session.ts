@@ -2,6 +2,7 @@ import { UserId } from "@/db/schema";
 import { createSession, generateSessionToken, validateRequest } from "./auth";
 // import { AuthenticationError } from "~/use-cases/errors";
 import { getCookie, setCookie } from "vinxi/http";
+import { TRPCError } from "@trpc/server";
 
 const SESSION_COOKIE_NAME = "session";
 
@@ -41,7 +42,10 @@ export const getCurrentUser = async () => {
 export const assertAuthenticated = async () => {
   const user = await getCurrentUser();
   if (!user) {
-    throw new Error("Not authenticated");
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Not authenticated",
+    });
   }
   return user;
 };

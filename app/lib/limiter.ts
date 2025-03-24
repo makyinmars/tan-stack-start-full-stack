@@ -45,8 +45,12 @@ export async function rateLimitByIp({
 }) {
   const ip = await getIp();
 
+  console.log("IP", ip)
+
   if (!ip) {
-    throw new Error("Rate limit exceeded");
+    throw new Error(
+      "Rate limit exceeded"
+    )
   }
 
   await rateLimitByKey({

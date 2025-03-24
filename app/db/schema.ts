@@ -153,3 +153,4 @@ export type ResetToken = typeof resetTokens.$inferSelect;
 export type NewResetToken = typeof resetTokens.$inferInsert;
 
 export type Session = typeof sessions.$inferSelect;
+export type Profile = typeof profiles.$inferSelect;
