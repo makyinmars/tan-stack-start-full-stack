@@ -8,7 +8,6 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
   beforeLoad: () => assertAuthenticatedFn(),
-
   loader: async ({ context }) => {
     const posts = await context.queryClient.ensureQueryData(
       context.trpc.post.authList.queryOptions()

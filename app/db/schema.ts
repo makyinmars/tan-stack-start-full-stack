@@ -116,8 +116,8 @@ export const profiles = pgTable("profile", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" })
     .unique(),
-  displayName: text("displayName"),
-  imageId: text("imageId"),
+  displayName: text("display_name"),
+  imageId: text("image_id"),
   image: text("image"),
   bio: text("bio").notNull().default(""),
   ...timestamps,

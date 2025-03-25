@@ -129,8 +129,6 @@ function Home() {
     }
   };
 
-  console.log("postQuery data", postQuery.data);
-
   return (
     <div className="p-2 flex flex-col gap-4">
       <h3>Welcome Home!!!</h3>

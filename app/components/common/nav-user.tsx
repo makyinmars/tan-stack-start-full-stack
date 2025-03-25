@@ -25,9 +25,10 @@ import {
 } from "@/components/ui/sidebar";
 import { createServerFn } from "@tanstack/react-start";
 import { invalidateSession, validateRequest } from "@/lib/auth";
+import { deleteSessionTokenCookie } from "@/lib/session";
 
 const signOutFn = createServerFn({
-  method: "POST",
+  method: "GET",
 }).handler(async () => {
   const { session } = await validateRequest();
   if (!session) {
@@ -38,6 +39,7 @@ const signOutFn = createServerFn({
   }
 
   await invalidateSession(session?.id ?? "");
+  await deleteSessionTokenCookie();
   return {
     isRedirect: true,
     path: "/",
@@ -121,7 +123,7 @@ export function NavUser({
                   if (result.isRedirect) {
                     navigate({ to: result.path });
                   }
-                } catch {}
+                } catch { }
               }}
             >
               <LogOutIcon />

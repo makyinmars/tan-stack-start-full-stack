@@ -4,7 +4,6 @@ import { TRPCError, TRPCRouterRecord } from "@trpc/server";
 import { registerUserUseCase, signInUseCase } from "@/services/auth";
 import { setSession } from "@/lib/session";
 import { rateLimitByKey } from "@/lib/limiter";
-import { validateRequest } from "@/lib/auth";
 
 export const authRouter = {
   signIn: publicProcedure.input(signInSchema).mutation(async ({ input }) => {
@@ -40,8 +39,7 @@ export const authRouter = {
     await setSession(user.id as string);
   }),
 
-  session: protectedProcedure.query(async ({ ctx }) => {
-    const session = ctx.session;
-    return session;
+  session: protectedProcedure.query(({ ctx }) => {
+    return ctx.session;
   }),
 } satisfies TRPCRouterRecord;
