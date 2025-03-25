@@ -3,7 +3,6 @@ import superjson from "superjson";
 import { ZodError } from "zod";
 import { db } from "@/db";
 import { validateRequest } from "@/lib/auth";
-import { assertAuthenticatedFn } from "@/fn/auth";
 
 /**
  * 1. CONTEXT
@@ -18,7 +17,8 @@ import { assertAuthenticatedFn } from "@/fn/auth";
  * @see https://trpc.io/docs/server/context
  */
 
-export const createTRPCContext = async () => {
+export const createTRPCContext = async ({ headers }: { headers: Headers }) => {
+  console.log("HEADERS", headers);
   const session = await validateRequest();
   return {
     db,
@@ -43,13 +43,17 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
-export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
-  if (!ctx.session) {
+const enforceUserIsAuthenticated = t.middleware(({ ctx, next }) => {
+  console.log("CTX", ctx.session)
+  if (!ctx.session?.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   return next({
     ctx: {
-      ...ctx,
+      session: { ...ctx.session, user: ctx.session.user },
     },
   });
 });
+
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthenticated);

@@ -21,7 +21,7 @@ function RouteComponent() {
   const trpc = useTRPC();
 
   const postQuery = useSuspenseQuery(trpc.post.authList.queryOptions());
-  console.log("postQuery data", postQuery);
+  console.log("postQuery data", postQuery.data);
   return (
     <AuthContentLayout>
       <PageHeader title="Dashboard" description="Welcome to your dashboard" />

@@ -68,6 +68,16 @@ function RootDocument(props: Readonly<{ children: React.ReactNode }>) {
           >
             Dashboard
           </Link>{" "}
+
+          <Link
+            to="/login"
+            activeProps={{
+              className: "font-bold",
+            }}
+            activeOptions={{ exact: true }}
+          >
+            Login
+          </Link>{" "}
           <Link
             to={"/posts"}
             activeProps={{

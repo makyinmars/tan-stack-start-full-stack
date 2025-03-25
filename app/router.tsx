@@ -9,10 +9,20 @@ import { NotFound } from "./components/NotFound";
 import { routeTree } from "./routeTree.gen";
 import { TRPCProvider } from "./trpc/react";
 import { TRPCRouter } from "./trpc/router";
+import { createServerFn } from "@tanstack/react-start";
+import { getWebRequest } from "@tanstack/react-start/server";
 
 // NOTE: Most of the integration code found here is experimental and will
 // definitely end up in a more streamlined API in the future. This is just
 // to show what's possible with the current APIs.
+const getRequestHeaders = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const request = getWebRequest()!;
+    const headers = new Headers(request.headers);
+
+    return Object.fromEntries(headers);
+  },
+);
 
 function getUrl() {
   const base = (() => {
@@ -36,9 +46,13 @@ export function createRouter() {
       httpBatchStreamLink({
         transformer: superjson,
         url: getUrl(),
+        async headers() {
+          return await getRequestHeaders();
+        }
       }),
     ],
   });
+
 
   const serverHelpers = createTRPCOptionsProxy({
     client: trpcClient,

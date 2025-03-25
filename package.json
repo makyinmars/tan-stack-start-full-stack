@@ -39,7 +39,6 @@
     "@trpc/client": "^11.0.0",
     "@trpc/server": "^11.0.0",
     "@trpc/tanstack-react-query": "^11.0.0",
-    "better-auth": "^1.2.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
@@ -81,5 +80,6 @@
   },
   "overrides": {
     "nitropack": "npm:nitropack-nightly@latest"
-  }
+  },
+  "pacakgeManager": "bun@1.2.5"
 }
