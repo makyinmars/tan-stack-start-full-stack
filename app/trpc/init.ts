@@ -1,8 +1,9 @@
-import { initTRPC, TRPCError } from '@trpc/server';
-import superjson from 'superjson';
-import { ZodError } from 'zod';
-import { db } from '@/db';
-import { SessionValidationResult, validateRequest } from '@/lib/auth';
+import { initTRPC, TRPCError } from "@trpc/server";
+import superjson from "superjson";
+import { ZodError } from "zod";
+import { db } from "@/db";
+import { validateRequest } from "@/lib/auth";
+import { assertAuthenticatedFn } from "@/fn/auth";
 
 /**
  * 1. CONTEXT
@@ -17,28 +18,12 @@ import { SessionValidationResult, validateRequest } from '@/lib/auth';
  * @see https://trpc.io/docs/server/context
  */
 
-interface CreateContextOptions {
-  headers: Headers;
-  session: SessionValidationResult | null
-}
-
-const createInnerTRPCContext = (opts: CreateContextOptions) => {
+export const createTRPCContext = async () => {
+  const session = await validateRequest();
   return {
-    session: opts.session,
-    headers: opts.headers,
     db,
+    session
   };
-};
-
-export const createTRPCContext = async (opts: CreateContextOptions) => {
-
-  const sesion = await validateRequest();
-
-  return createInnerTRPCContext({
-    ...opts,
-    session: sesion,
-  });
-
 };
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
@@ -58,14 +43,13 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 export const createTRPCRouter = t.router;
 export const publicProcedure = t.procedure;
 
-export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
+export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
   if (!ctx.session) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
+    throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       ...ctx,
-      session: ctx.session,
     },
-  })
+  });
 });

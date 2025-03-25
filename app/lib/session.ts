@@ -3,6 +3,7 @@ import { createSession, generateSessionToken, validateRequest } from "./auth";
 // import { AuthenticationError } from "~/use-cases/errors";
 import { getCookie, setCookie } from "vinxi/http";
 import { TRPCError } from "@trpc/server";
+import { cache } from "react";
 
 const SESSION_COOKIE_NAME = "session";
 
@@ -38,6 +39,15 @@ export const getCurrentUser = async () => {
   const { user } = await validateRequest();
   return user ?? undefined;
 };
+
+export const getCurrentSession = cache(async () => {
+  const token = await getSessionToken();
+  if (!token) {
+    return { session: null, user: null };
+  }
+  const result = await validateRequest();
+  return result;
+});
 
 export const assertAuthenticated = async () => {
   const user = await getCurrentUser();

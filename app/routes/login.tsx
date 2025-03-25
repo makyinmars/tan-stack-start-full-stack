@@ -31,7 +31,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { registerUserUseCase, signInUseCase } from "@/services/auth";
 import { setSession } from "@/lib/session";
 import { rateLimitByKey } from "@/lib/limiter";
-import { assertAuthenticatedFn } from "@/fn/auth";
 import { REDIRECT_AFTER_LOGIN } from "@/constants/config";
 
 const createSignInFn = createServerFn({

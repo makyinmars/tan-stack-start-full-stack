@@ -1,13 +1,13 @@
 import { signInSchema, signUpSchema } from "@/validators/auth";
-import { publicProcedure } from "../init";
+import { protectedProcedure, publicProcedure } from "../init";
 import { TRPCError, TRPCRouterRecord } from "@trpc/server";
 import { registerUserUseCase, signInUseCase } from "@/services/auth";
 import { setSession } from "@/lib/session";
 import { rateLimitByKey } from "@/lib/limiter";
+import { validateRequest } from "@/lib/auth";
 
 export const authRouter = {
   signIn: publicProcedure.input(signInSchema).mutation(async ({ input }) => {
-
     const validResult = signInSchema.safeParse(input);
     if (!validResult.success) {
       throw new TRPCError({
@@ -20,10 +20,7 @@ export const authRouter = {
 
     await rateLimitByKey({ key: email, limit: 3, window: 10000 });
 
-    const user = await signInUseCase(
-      email,
-      password
-    );
+    const user = await signInUseCase(email, password);
     await setSession(user.id);
   }),
   signUp: publicProcedure.input(signUpSchema).mutation(async ({ input }) => {
@@ -41,5 +38,10 @@ export const authRouter = {
 
     const user = await registerUserUseCase(email, password);
     await setSession(user.id as string);
+  }),
+
+  session: protectedProcedure.query(async ({ ctx }) => {
+    const session = ctx.session;
+    return session;
   }),
 } satisfies TRPCRouterRecord;

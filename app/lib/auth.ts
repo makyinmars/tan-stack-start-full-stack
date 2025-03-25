@@ -98,8 +98,6 @@ export type SessionValidationResult =
   | { session: Session; user: User }
   | { session: null; user: null };
 
-
-
 export async function generateRandomToken(length: number) {
   const buf = await new Promise<Buffer>((resolve, reject) => {
     crypto.randomBytes(Math.ceil(length / 2), (err, buf) => {
@@ -115,7 +113,7 @@ export async function generateRandomToken(length: number) {
 }
 
 export async function createTransaction<T extends typeof db>(
-  cb: (trx: T) => void,
+  cb: (trx: T) => void
 ) {
   await db.transaction(cb as any);
 }
@@ -131,7 +129,7 @@ export async function hashPassword(plainTextPassword: string, salt: string) {
       (err, derivedKey) => {
         if (err) reject(err);
         resolve(derivedKey.toString("hex"));
-      },
+      }
     );
   });
 }
