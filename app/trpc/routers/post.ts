@@ -23,7 +23,7 @@ export const postRouter = {
       return post[0];
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(z.object({ title: z.string(), body: z.string() }))
     .mutation(async ({ input, ctx }) => {
       const post = {
@@ -43,9 +43,6 @@ export const postRouter = {
 
       return newPosts[0];
     }),
-  dbList: publicProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(posts);
-  }),
   authList: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.select().from(posts);
   }),

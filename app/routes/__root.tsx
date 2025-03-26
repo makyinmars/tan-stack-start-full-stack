@@ -15,6 +15,7 @@ import { NotFound } from "@/components/NotFound";
 import { TRPCRouter } from "@/trpc/router";
 import * as React from "react";
 import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "next-themes";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -44,7 +45,9 @@ export const Route = createRootRouteWithContext<{
 
 function RootDocument(props: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html>
+    <html lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <HeadContent />
       </head>
@@ -106,7 +109,13 @@ function RootDocument(props: Readonly<{ children: React.ReactNode }>) {
           </Link>
         </div>
         <hr />
-        {props.children}
+        <ThemeProvider
+          attribute="class"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {props.children}
+        </ThemeProvider>
         <TanStackRouterDevtools position="bottom-right" />
         <ReactQueryDevtools buttonPosition="bottom-left" />
         <Scripts />
