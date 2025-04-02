@@ -9,7 +9,7 @@ import { NotFound } from "./components/NotFound";
 import { routeTree } from "./routeTree.gen";
 import { TRPCProvider } from "./trpc/react";
 import { TRPCRouter } from "./trpc/router";
-import { createServerFn } from "@tanstack/react-start";
+import { createIsomorphicFn, createServerFn } from "@tanstack/react-start";
 import { getWebRequest } from "@tanstack/react-start/server";
 
 // NOTE: Most of the integration code found here is experimental and will
@@ -23,6 +23,8 @@ const getRequestHeaders = createServerFn({ method: "GET" }).handler(
     return Object.fromEntries(headers);
   },
 );
+
+const headers = createIsomorphicFn().client(() => ({})).server(() => getRequestHeaders());
 
 function getUrl() {
   const base = (() => {
@@ -46,9 +48,7 @@ export function createRouter() {
       httpBatchStreamLink({
         transformer: superjson,
         url: getUrl(),
-        async headers() {
-          return await getRequestHeaders();
-        }
+        headers,
       }),
     ],
   });

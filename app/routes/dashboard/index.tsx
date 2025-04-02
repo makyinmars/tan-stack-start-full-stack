@@ -1,14 +1,31 @@
-import AuthContentLayout from "@/components/common/auth-content-layout";
 import PageHeader from "@/components/common/page-header";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { assertAuthenticatedFn } from "@/fn/auth";
+// import { assertAuthenticatedFn } from "@/fn/auth";
 import { useTRPC } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -16,10 +33,9 @@ import { z } from "zod";
 
 export const Route = createFileRoute("/dashboard/")({
   component: RouteComponent,
-  beforeLoad: () => assertAuthenticatedFn(),
   loader: async ({ context }) => {
     const posts = await context.queryClient.ensureQueryData(
-      context.trpc.post.authList.queryOptions()
+      context.trpc.post.authList.queryOptions(),
     );
     return { posts };
   },
@@ -31,12 +47,9 @@ const formSchema = z.object({
   body: z.string().min(1, "Body is required"),
 });
 
-
 function RouteComponent() {
-
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-
 
   const postQuery = useSuspenseQuery(trpc.post.authList.queryOptions());
 
@@ -50,7 +63,7 @@ function RouteComponent() {
 
         // Snapshot the previous state
         const previousPosts = queryClient.getQueryData(
-          trpc.post.authList.queryOptions().queryKey
+          trpc.post.authList.queryOptions().queryKey,
         );
 
         // Optimistically update the cache with the new post
@@ -67,7 +80,7 @@ function RouteComponent() {
             };
 
             return [...(old || []), optimisticPost];
-          }
+          },
         );
 
         // Return the snapshot so we can roll back if something goes wrong
@@ -78,7 +91,7 @@ function RouteComponent() {
         if (context?.previousPosts) {
           queryClient.setQueryData(
             trpc.post.authList.queryOptions().queryKey,
-            context.previousPosts
+            context.previousPosts,
           );
         }
       },
@@ -92,7 +105,7 @@ function RouteComponent() {
           queryKey: trpc.post.authList.queryOptions().queryKey,
         });
       },
-    })
+    }),
   );
 
   // Initialize the form
@@ -119,7 +132,7 @@ function RouteComponent() {
   };
 
   return (
-    <AuthContentLayout>
+    <div>
       <PageHeader title="Dashboard" description="Welcome to your dashboard" />
 
       <div className="my-4">
@@ -188,6 +201,6 @@ function RouteComponent() {
           ))}
         </TableBody>
       </Table>
-    </AuthContentLayout>
+    </div>
   );
 }

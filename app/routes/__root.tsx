@@ -45,9 +45,7 @@ export const Route = createRootRouteWithContext<{
 
 function RootDocument(props: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en"
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
@@ -71,7 +69,6 @@ function RootDocument(props: Readonly<{ children: React.ReactNode }>) {
           >
             Dashboard
           </Link>{" "}
-
           <Link
             to="/login"
             activeProps={{

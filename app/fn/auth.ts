@@ -11,13 +11,8 @@ export const assertAuthenticatedFn = createServerFn().handler(async () => {
   const { user } = await validateRequest();
 
   if (!user) {
-    throw redirect({ to: "/" });
+    throw redirect({ to: "/login" });
   }
 
   return user;
 });
-
-// export const isUserPremiumFn = createServerFn().handler(async () => {
-//   const { user } = await validateRequest();
-//   return !!user?.isPremium;
-// });

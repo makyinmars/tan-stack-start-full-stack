@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { db } from "@/db";
 import { validateRequest } from "@/lib/auth";
 
-export const createTRPCContext = async ({ headers }: { headers: Headers }) => {
+export const createTRPCContext = async () => {
   const session = await validateRequest();
   return {
     db,

@@ -15,10 +15,12 @@ import { Route as RedirectImport } from './routes/redirect'
 import { Route as ProtectedImport } from './routes/protected'
 import { Route as PostsImport } from './routes/posts'
 import { Route as LoginImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as PostsIndexImport } from './routes/posts.index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as PostsPostIdImport } from './routes/posts.$postId'
+import { Route as DashboardSettingsIndexImport } from './routes/dashboard/settings/index'
 import { Route as PostsPostIdDeepImport } from './routes/posts_.$postId.deep'
 
 // Create/Update Routes
@@ -47,6 +49,12 @@ const LoginRoute = LoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const DashboardRouteRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
@@ -60,15 +68,21 @@ const PostsIndexRoute = PostsIndexImport.update({
 } as any)
 
 const DashboardIndexRoute = DashboardIndexImport.update({
-  id: '/dashboard/',
-  path: '/dashboard/',
-  getParentRoute: () => rootRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 
 const PostsPostIdRoute = PostsPostIdImport.update({
   id: '/$postId',
   path: '/$postId',
   getParentRoute: () => PostsRoute,
+} as any)
+
+const DashboardSettingsIndexRoute = DashboardSettingsIndexImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => DashboardRouteRoute,
 } as any)
 
 const PostsPostIdDeepRoute = PostsPostIdDeepImport.update({
@@ -86,6 +100,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRoute
     }
     '/login': {
@@ -125,10 +146,10 @@ declare module '@tanstack/react-router' {
     }
     '/dashboard/': {
       id: '/dashboard/'
-      path: '/dashboard'
-      fullPath: '/dashboard'
+      path: '/'
+      fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof DashboardRouteImport
     }
     '/posts/': {
       id: '/posts/'
@@ -144,10 +165,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PostsPostIdDeepImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/settings/': {
+      id: '/dashboard/settings/'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsIndexImport
+      parentRoute: typeof DashboardRouteImport
+    }
   }
 }
 
 // Create and export the route tree
+
+interface DashboardRouteRouteChildren {
+  DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardSettingsIndexRoute: typeof DashboardSettingsIndexRoute
+}
+
+const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
+  DashboardIndexRoute: DashboardIndexRoute,
+  DashboardSettingsIndexRoute: DashboardSettingsIndexRoute,
+}
+
+const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
+  DashboardRouteRouteChildren,
+)
 
 interface PostsRouteChildren {
   PostsPostIdRoute: typeof PostsPostIdRoute
@@ -163,14 +205,16 @@ const PostsRouteWithChildren = PostsRoute._addFileChildren(PostsRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
   '/protected': typeof ProtectedRoute
   '/redirect': typeof RedirectRoute
   '/posts/$postId': typeof PostsPostIdRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/posts/': typeof PostsIndexRoute
   '/posts/$postId/deep': typeof PostsPostIdDeepRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -182,11 +226,13 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/posts': typeof PostsIndexRoute
   '/posts/$postId/deep': typeof PostsPostIdDeepRoute
+  '/dashboard/settings': typeof DashboardSettingsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRouteRouteWithChildren
   '/login': typeof LoginRoute
   '/posts': typeof PostsRouteWithChildren
   '/protected': typeof ProtectedRoute
@@ -195,20 +241,23 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/posts/': typeof PostsIndexRoute
   '/posts_/$postId/deep': typeof PostsPostIdDeepRoute
+  '/dashboard/settings/': typeof DashboardSettingsIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/login'
     | '/posts'
     | '/protected'
     | '/redirect'
     | '/posts/$postId'
-    | '/dashboard'
+    | '/dashboard/'
     | '/posts/'
     | '/posts/$postId/deep'
+    | '/dashboard/settings'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -219,9 +268,11 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/posts'
     | '/posts/$postId/deep'
+    | '/dashboard/settings'
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
     | '/login'
     | '/posts'
     | '/protected'
@@ -230,26 +281,27 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/posts/'
     | '/posts_/$postId/deep'
+    | '/dashboard/settings/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
   PostsRoute: typeof PostsRouteWithChildren
   ProtectedRoute: typeof ProtectedRoute
   RedirectRoute: typeof RedirectRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
   PostsPostIdDeepRoute: typeof PostsPostIdDeepRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRouteRoute: DashboardRouteRouteWithChildren,
   LoginRoute: LoginRoute,
   PostsRoute: PostsRouteWithChildren,
   ProtectedRoute: ProtectedRoute,
   RedirectRoute: RedirectRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
   PostsPostIdDeepRoute: PostsPostIdDeepRoute,
 }
 
@@ -264,16 +316,23 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/dashboard",
         "/login",
         "/posts",
         "/protected",
         "/redirect",
-        "/dashboard/",
         "/posts_/$postId/deep"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/dashboard": {
+      "filePath": "dashboard/route.tsx",
+      "children": [
+        "/dashboard/",
+        "/dashboard/settings/"
+      ]
     },
     "/login": {
       "filePath": "login.tsx"
@@ -296,7 +355,8 @@ export const routeTree = rootRoute
       "parent": "/posts"
     },
     "/dashboard/": {
-      "filePath": "dashboard/index.tsx"
+      "filePath": "dashboard/index.tsx",
+      "parent": "/dashboard"
     },
     "/posts/": {
       "filePath": "posts.index.tsx",
@@ -304,6 +364,10 @@ export const routeTree = rootRoute
     },
     "/posts_/$postId/deep": {
       "filePath": "posts_.$postId.deep.tsx"
+    },
+    "/dashboard/settings/": {
+      "filePath": "dashboard/settings/index.tsx",
+      "parent": "/dashboard"
     }
   }
 }

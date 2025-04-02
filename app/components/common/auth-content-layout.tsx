@@ -18,8 +18,8 @@ import { AppSidebar } from "./app-sidebar";
 import { createServerFn } from "@tanstack/react-start";
 import { getCookie } from "vinxi/http";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import ModeToggle from "../custom/mode-toggle";
-import { Link, useLocation } from '@tanstack/react-router';
+import { ModeToggle } from "../custom/mode-toggle";
+import { Link, useLocation } from "@tanstack/react-router";
 
 // Server function to get a cookie value
 export const getCookieValue = createServerFn({ method: "GET" }).handler(
@@ -51,12 +51,6 @@ const AuthContentLayout = ({ children }: { children: React.ReactNode }) => {
   // Split the path into segments and remove empty segments
   const pathSegments = pathname.split("/").filter(Boolean);
 
-  // Generate the page title based on the last path segment or default to "Dashboard"
-  const pageTitle =
-    pathSegments.length > 0
-      ? formatPathSegment(pathSegments[pathSegments.length - 1] || "")
-      : "Dashboard";
-
   return (
     <SidebarProvider defaultOpen={sidebarStateQuery.data === "true"}>
       <AppSidebar />
@@ -64,7 +58,6 @@ const AuthContentLayout = ({ children }: { children: React.ReactNode }) => {
         <header className="items-start justify-between gap-4 rounded-xl bg-muted px-6 py-4 sm:flex">
           <div className="flex items-center gap-4">
             <SidebarTrigger className="-ml-1" />
-            <h1 className="font-semibold text-xl tracking-tight">{pageTitle}</h1>
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
@@ -72,9 +65,12 @@ const AuthContentLayout = ({ children }: { children: React.ReactNode }) => {
                   <>
                     {/* Generate breadcrumb items for each path segment except the last one */}
                     {pathSegments.slice(0, -1).map((segment, index) => {
-                      const href = `/${pathSegments
-                        .slice(0, index + 1)
-                        .join("/")}`;
+                      // If segment is dashboard, link to root
+                      const href =
+                        segment === "dashboard"
+                          ? "/"
+                          : `/${pathSegments.slice(0, index + 1).join("/")}`;
+
                       return (
                         <Fragment key={segment}>
                           <BreadcrumbItem className="hidden md:block">
@@ -93,7 +89,7 @@ const AuthContentLayout = ({ children }: { children: React.ReactNode }) => {
                     <BreadcrumbItem>
                       <BreadcrumbPage>
                         {formatPathSegment(
-                          pathSegments[pathSegments.length - 1] || "",
+                          pathSegments[pathSegments.length - 1] || ""
                         )}
                       </BreadcrumbPage>
                     </BreadcrumbItem>
@@ -101,7 +97,7 @@ const AuthContentLayout = ({ children }: { children: React.ReactNode }) => {
                 ) : (
                   // If we're at the root path
                   <BreadcrumbItem>
-                    <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    <BreadcrumbPage>Home</BreadcrumbPage>
                   </BreadcrumbItem>
                 )}
               </BreadcrumbList>

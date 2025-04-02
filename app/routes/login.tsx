@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -153,8 +153,10 @@ function LoginComponent() {
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <Tabs defaultValue="sign-in" className="w-[400px]">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="sign-in">Sign In</TabsTrigger>
+        <TabsList className="grid grid-cols-2 gap-2 w-full">
+          <TabsTrigger value="sign-in" className="w-full">
+            Sign In
+          </TabsTrigger>
           <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
         </TabsList>
         <TabsContent value="sign-in">

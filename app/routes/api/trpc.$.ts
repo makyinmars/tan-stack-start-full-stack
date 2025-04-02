@@ -10,7 +10,7 @@ const handler = ({ request }: { request: Request }) => {
     req: request,
     router: trpcRouter,
     endpoint: "/api/trpc",
-    createContext: () => createTRPCContext(request)
+    createContext: () => createTRPCContext()
   });
 };
 
