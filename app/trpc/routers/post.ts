@@ -2,7 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, publicProcedure } from "../init";
 import { TRPCError, TRPCRouterRecord } from "@trpc/server";
 import { posts } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 export const postRouter = {
   list: publicProcedure.query(async ({ ctx }) => {
@@ -44,6 +44,7 @@ export const postRouter = {
       return newPosts[0];
     }),
   authList: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db.select().from(posts);
+    // Sort by createdAt in descending order (newest first)
+    return await ctx.db.select().from(posts).orderBy(desc(posts.createdAt));
   }),
 } satisfies TRPCRouterRecord;

@@ -17,6 +17,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 // import { assertAuthenticatedFn } from "@/fn/auth";
 import { useTRPC } from "@/trpc/react";
@@ -79,7 +85,8 @@ function RouteComponent() {
               updatedAt: new Date(),
             };
 
-            return [...(old || []), optimisticPost];
+            // Prepend the optimistic post to the beginning of the list
+            return [optimisticPost, ...(old || [])];
           },
         );
 
@@ -132,75 +139,93 @@ function RouteComponent() {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
       <PageHeader title="Dashboard" description="Welcome to your dashboard" />
 
-      <div className="my-4">
-        <h4 className="text-lg font-medium mb-4">Create New Post</h4>
-
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handleCreatePost)}
-            className="space-y-4"
-          >
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter post title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="body"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Body</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Enter post content"
-                      className="min-h-[100px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <Button
-              type="submit"
-              disabled={createPostMutation.isPending}
-              className="mt-4"
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Post</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleCreatePost)}
+              className="space-y-4"
             >
-              {createPostMutation.isPending ? "Creating..." : "Create Post"}
-            </Button>
-          </form>
-        </Form>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Body</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {postQuery.data?.map((post) => (
-            <TableRow key={post.id}>
-              <TableCell>{post.title}</TableCell>
-              <TableCell>{post.body}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter post title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="body"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Body</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter post content"
+                        className="min-h-[100px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                disabled={createPostMutation.isPending}
+                className="mt-4"
+              >
+                {createPostMutation.isPending ? "Creating..." : "Create Post"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Posts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Title</TableHead>
+                <TableHead>Body</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {postQuery.data?.map((post) => (
+                <TableRow key={post.id}>
+                  <TableCell>{post.title}</TableCell>
+                  <TableCell>{post.body}</TableCell>
+                </TableRow>
+              ))}
+              {postQuery.data?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={2} className="text-center h-24">
+                    No posts yet. Create one above!
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
