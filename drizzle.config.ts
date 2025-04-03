@@ -1,4 +1,5 @@
 import { databasePrefix } from "@/constants";
+import { env } from "@/env";
 import "dotenv/config";
 import { defineConfig } from "drizzle-kit";
 
@@ -7,7 +8,7 @@ export default defineConfig({
   dialect: "postgresql",
   out: "./drizzle",
   dbCredentials: {
-    url: process.env.DATABASE_URL as string,
+    url: env.DATABASE_URL,
   },
   tablesFilter: [`${databasePrefix}_*`],
   verbose: true,
