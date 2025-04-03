@@ -16,6 +16,7 @@ import { TRPCRouter } from "@/trpc/router";
 import * as React from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "next-themes";
+import { seo } from "@/utils/seo";
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -25,8 +26,15 @@ export const Route = createRootRouteWithContext<{
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      ...seo({
+        title: "Full Stack Tan Stack Starter",
+        description:
+          "TanStack Start starter with tRPC, Drizzle ORM, lucia auth and TailwindCSS ",
+      }),
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [{ rel: "stylesheet", href: appCss },
+    { rel: "icon", href: "/favicon.svg" }
+    ],
   }),
   errorComponent: (props) => {
     return (
